@@ -8,14 +8,17 @@ package szymon.obecnosc;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.*;
 
 /**
  * @author Szymon Chmielewski
- */
+*/
 public class OknoObecnosc extends JFrame implements ActionListener {
     private final JFrame oknoObecnosc = new JFrame();
     private final JButton pObecnoscBtn = new JButton();
@@ -24,6 +27,8 @@ public class OknoObecnosc extends JFrame implements ActionListener {
     private final JFormattedTextField dataField = new JFormattedTextField();
     private final JFormattedTextField godzinaField = new JFormattedTextField();
     FlowLayout flowLayout;
+    private ObecnoscData pracownik;
+    private ObecnoscDataDAO a;
 
     // oknoObecnosc - wlasciwosci
 
@@ -32,6 +37,13 @@ public class OknoObecnosc extends JFrame implements ActionListener {
 	flowLayout = new FlowLayout();
 	flowLayout.setAlignment(FlowLayout.CENTER);
 	ustawieniaOkna();
+	pracownik = new ObecnoscData();
+	try {
+	    a = new ObecnoscDataDAO();
+	} catch (SQLException ex) {
+	    Logger.getLogger(OknoObecnosc.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	pracownik.setIdPracownika(3);
     }
 
     private void ustawieniaOkna() {
@@ -54,54 +66,50 @@ public class OknoObecnosc extends JFrame implements ActionListener {
 	pWyjscieBtn.setAlignmentY(FlowLayout.CENTER);
 
 	// okno
+	
+	 pObecnoscBtn.addActionListener(e ->{
+	    
+	  
+	// dzialania po kliknieciu guzika potwierdzjaacego obecnosc
+		
+		napis.setText("Obecnośćć potwierdzono: ");
+		a.rejestracjaWejscia(pracownik);
+				
+		dataField.setText(pracownik.dateIn.toString());
+		pObecnoscBtn.setEnabled(false);
+		pWyjscieBtn.setEnabled(true);
+	   });
+	 
+	
+	 pWyjscieBtn.addActionListener(e ->{
+		
+	     
+	        napis.setText("Wyjście potwierdzono: ");
+		a.rejestracjaWyjscia(pracownik);
+		System.out.println(pracownik.dateOut.toString());
+		dataField.setText(pracownik.dateOut.toString());
+	 });    
+	
+	
 	oknoObecnosc.add(pObecnoscBtn);
 	oknoObecnosc.add(pWyjscieBtn);
+	oknoObecnosc.add(napis);
+	oknoObecnosc.add(dataField);
 	oknoObecnosc.setLayout(flowLayout);
 	oknoObecnosc.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	oknoObecnosc.setVisible(true);
+	oknoObecnosc.setResizable(false);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-	Object source = e.getSource();
-	// potem zrobie ze data z srwera bedzie wypisywana ez
-
-	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"); // te onformacje powinny być pobierane
-										 // z serwera?
-	LocalDateTime now = LocalDateTime.now();
-
-	try {
-	    // tworzę sobie obiekt typu DAO i wrzucam dane
-	    DAO a = new DAO();
-	    ObecnoscData pracownik = new ObecnoscData();
-	    // id praownika jakies wymyslone
-	    pracownik.setIdPracownika(3);
-	    if (source == pObecnoscBtn) {
-
-		// dzialania po kliknieciu guzika potwierdzjaacego obecnosc
-		oknoObecnosc.add(napis);
-		oknoObecnosc.add(dataField);
-		napis.setText("Obecnośćć potwierdzono: ");
-		a.rejestracjaWejscia(pracownik);
-		dataField.setText(dtf.format(now));
-		pObecnoscBtn.setEnabled(false);
-		pWyjscieBtn.setEnabled(true);
-	    }
-	    if (source == pWyjscieBtn) {
-		//dzialania po kliku drugiego guzika
-		napis.setText("Wyjście potwierdzono: ");
-		dataField.setText(dtf.format(now));
-		a.rejestracjaWyjscia(pracownik);
-	    }
-
-	} catch (Exception ex) {
-
-	    ex.printStackTrace();
-	}
-
-	// System.out.println(dtf.format(now));
-
+	//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    
+   
+    
+   
 
 }
 

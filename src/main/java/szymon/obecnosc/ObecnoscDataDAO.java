@@ -22,12 +22,13 @@ import java.util.logging.Logger;
  *
  * @author Szymon Chmielewski
  */
-public class DAO {
+public class ObecnoscDataDAO {
     Connection conn = null;
     Statement st;
     ResultSet rs = null;
+    boolean obecnosc = false;
 
-    public DAO() throws SQLException {
+    public ObecnoscDataDAO() throws SQLException {
 
     }
 
@@ -44,7 +45,6 @@ public class DAO {
 		System.out.println("Connected");
 	    }
 
-	    System.out.println("Połącono z DB");
 	} catch (Exception e) {
 	    System.out.println("brak polaczenia");
 	    e.printStackTrace();
@@ -72,46 +72,52 @@ public class DAO {
     }
 
     public boolean rejestracjaWejscia(ObecnoscData obj) {
-
-	obj.setIdPracownika(0);
+	//ObecnoscDataDAOController controller = null;
+	//if(controller.czyWszedl(obj, this)==false){
+	
+	obj.setIdPracownika(11);
 	obj.setDateIn(getServerTime());
 
-	
-
-	String insertDaneWejsciaQuery = "INSERT INTO E_OBECNOSCI (ob_spr_id,ob_data) VALUES(4,'" + obj.dateIn + "')";
+	String insertDaneWejsciaQuery = "INSERT INTO E_OBECNOSCI (ob_spr_id,ob_data) VALUES("+obj.idPracownika+",'" + obj.dateIn + "')";
 	try {
 	    if (polacz()) {
 		this.st = this.conn.createStatement();
 		this.st.execute(insertDaneWejsciaQuery);
+		
 
 	    }
 	} catch (SQLException ex) {
-	    Logger.getLogger(DAO.class.getName()).log(Level.SEVERE, null, ex);
+	    Logger.getLogger(ObecnoscDataDAO.class.getName()).log(Level.SEVERE, null, ex);
 	    ex.printStackTrace();
 	    return false;
 	} finally {
 	    rozlacz();
+	    obecnosc = true;
 	}
-
+	//}
 	return true;
     }
 
     public void rejestracjaWyjscia(ObecnoscData obj) {
 	obj.setDateOut(getServerTime());
+	System.out.println(obj.dateOut);
 	try {
-	    
-	    
+
 	    if (polacz()) {
-		//wybieram najnowsze id(PK) logowania dla id pracownikad
+		// wybieram najnowsze id(PK) logowania dla id pracownikad
 		String getObId = "SELECT TOP 1 ob_id FROM E_OBECNOSCI WHERE ob_spr_id = " + obj.getIdPracownika()
 			+ " ORDER BY ob_id DESC";
 		this.st = this.conn.createStatement();
 		ResultSet rs = st.executeQuery(getObId);
-		rs.next();
-		int id = rs.getInt("ob_id");
 		
-		//aktualizacja rekordu dla id logowania
-		String updateWyjscie = "UPDATE E_OBECNOSCI SET ob_data_wyj ='" + obj.dateOut + "'  WHERE ob_id = "+id+"";
+		rs.next();
+		
+		int id = rs.getInt("ob_id");
+		System.out.println(id);
+
+		// aktualizacja rekordu dla id logowania
+		String updateWyjscie = "UPDATE E_OBECNOSCI SET ob_data_wyj ='" + obj.dateOut + "'  WHERE ob_id = " + id
+			+ "";
 		this.st = this.conn.createStatement();
 		st.execute(updateWyjscie);
 
@@ -119,6 +125,11 @@ public class DAO {
 	} catch (SQLException ex) {
 	    ex.printStackTrace();
 	} finally {
+	    rozlacz();
+	        
+	    // ustawiam obecność
+	    obecnosc = false;
+
 	}
 
     }
@@ -133,7 +144,7 @@ public class DAO {
 		this.rs = this.st.executeQuery(getDateQuery);
 		this.rs.next();
 		Timestamp formatterDaty = rs.getTimestamp("");
-		System.out.println(formatterDaty + " timestamp");
+
 		if (formatterDaty != null) {
 
 		    czasWejscia = formatterDaty;
@@ -141,7 +152,8 @@ public class DAO {
 		}
 
 	    } catch (SQLException ex) {
-		// Logger.getLogger(DAO.class.getName()).log(Level.SEVERE, null, ex);
+		// Logger.getLogger(ObecnoscDataDAO.class.getName()).log(Level.SEVERE, null,
+		// ex);
 		ex.printStackTrace();
 	    } finally {
 		rozlacz();

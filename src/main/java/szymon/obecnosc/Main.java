@@ -9,13 +9,13 @@ package szymon.obecnosc;
 /**
  * @author Szymon Chmielewski
  */
-public class Test {
+public class Main {
 
 	public static void main(String[] args) {
 	
 	    OknoObecnosc okno = new OknoObecnosc();
 	        try {
-		    DAO a = new DAO();
+		    ObecnoscDataDAO a = new ObecnoscDataDAO();
 		    } catch (Exception e) {
 			
 			e.printStackTrace();
