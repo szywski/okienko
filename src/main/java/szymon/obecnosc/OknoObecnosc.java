@@ -83,11 +83,12 @@ public class OknoObecnosc extends JFrame implements ActionListener {
 		dataField.setText(dtf.format(now));
 		
 		try{
-		    
+		    //tworzę sobie obiekt typu  DAO i wrzucam dane
 		        DAO a = new DAO();
-			a.insert(new ObecnoscData());
+			a.rejestracjaWejscia(new ObecnoscData());
 		    
 		}catch(Exception ex){
+		   
 		    ex.printStackTrace();
 		}
 		
