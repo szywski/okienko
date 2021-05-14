@@ -62,50 +62,46 @@ public class OknoObecnosc extends JFrame implements ActionListener {
     }
 
     @Override
-	public void actionPerformed(ActionEvent e){
-	    Object source = e.getSource();
-	    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"); //te onformacje powinny być pobierane z serwera?
-		LocalDateTime now = LocalDateTime.now();
-		
-		try{
-		    //tworzę sobie obiekt typu  DAO i wrzucam dane
-		        DAO a = new DAO();
-			ObecnoscData pracownik = new ObecnoscData();
-			pracownik.setIdPracownika(3);
-			if(source == pObecnoscBtn){
-		
-		//oknoObecnosc.add(godzinaField);
-				oknoObecnosc.add(napis);
-				oknoObecnosc.add(dataField);
-				napis.setText("Obecnośćć potwierdzono: ");
-				a.rejestracjaWejscia(pracownik); 
-				dataField.setText(dtf.format(now));
-				pObecnoscBtn.setEnabled(true);
-				pWyjscieBtn.setEnabled(true);  
-			}
-			if(source==pWyjscieBtn){
-				napis.setText("Wyjście potwierdzono: ");
-				dataField.setText(dtf.format(now));
-				a.rejestracjaWyjscia(pracownik);
-		}
-			
-			
-			
-			
-			
-		}catch(Exception ex){
-		   
-		    ex.printStackTrace();
-		}
-	    
-		
-		
-		
-		
-		//System.out.println(dtf.format(now));
-		
-	    
+    public void actionPerformed(ActionEvent e) {
+	Object source = e.getSource();
+	// potem zrobie ze data z srwera bedzie wypisywana ez
+
+	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"); // te onformacje powinny być pobierane
+										 // z serwera?
+	LocalDateTime now = LocalDateTime.now();
+
+	try {
+	    // tworzę sobie obiekt typu DAO i wrzucam dane
+	    DAO a = new DAO();
+	    ObecnoscData pracownik = new ObecnoscData();
+	    // id praownika jakies wymyslone
+	    pracownik.setIdPracownika(3);
+	    if (source == pObecnoscBtn) {
+
+		// dzialania po kliknieciu guzika potwierdzjaacego obecnosc
+		oknoObecnosc.add(napis);
+		oknoObecnosc.add(dataField);
+		napis.setText("Obecnośćć potwierdzono: ");
+		a.rejestracjaWejscia(pracownik);
+		dataField.setText(dtf.format(now));
+		pObecnoscBtn.setEnabled(false);
+		pWyjscieBtn.setEnabled(true);
 	    }
+	    if (source == pWyjscieBtn) {
+		//dzialania po kliku drugiego guzika
+		napis.setText("Wyjście potwierdzono: ");
+		dataField.setText(dtf.format(now));
+		a.rejestracjaWyjscia(pracownik);
+	    }
+
+	} catch (Exception ex) {
+
+	    ex.printStackTrace();
+	}
+
+	// System.out.println(dtf.format(now));
+
+    }
 
 }
 
