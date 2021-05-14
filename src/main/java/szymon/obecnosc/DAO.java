@@ -74,31 +74,9 @@ public class DAO {
     public boolean rejestracjaWejscia(ObecnoscData obj) {
 
 	obj.setIdPracownika(0);
+	obj.setDateIn(getServerTime());
 
-	String getDateQuery = "SELECT GETDATE();";
-	if (polacz()) {
-	    try {
-
-		this.st = this.conn.createStatement();
-		this.rs = this.st.executeQuery(getDateQuery);
-		this.rs.next();
-		Timestamp formatterDaty = rs.getTimestamp("");
-		System.out.println(formatterDaty+ " timestamp");
-		if(formatterDaty != null){
-			
-		    Date czasWejscia = formatterDaty;
-		        obj.setDateIn(czasWejscia);
-		}
-
-		System.out.println(obj.dateIn + "obiekt");
-
-	    } catch (SQLException ex) {
-		// Logger.getLogger(DAO.class.getName()).log(Level.SEVERE, null, ex);
-		ex.printStackTrace();
-	    } finally {
-		rozlacz();
-	    }
-	}
+	
 
 	String insertDaneWejsciaQuery = "INSERT INTO E_OBECNOSCI (ob_spr_id,ob_data) VALUES(4,'" + obj.dateIn + "')";
 	try {
@@ -106,7 +84,6 @@ public class DAO {
 		this.st = this.conn.createStatement();
 		this.st.execute(insertDaneWejsciaQuery);
 
-		
 	    }
 	} catch (SQLException ex) {
 	    Logger.getLogger(DAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -116,6 +93,53 @@ public class DAO {
 	}
 
 	return true;
+    }
+
+    public void updateWyjscie(ObecnoscData obj) {
+	obj.setDateOut(getServerTime());
+	try {
+	    String getObId = "SELECT TOP 1 * FROM E_OBECNOSCI WHERE ob_spr_id = " + obj.getIdPracownika()
+		    + " ORDER BY ob_id DESC";
+	    String updateWyjscie = "UPDATE E_OBECNOSCI SET ob_data_wyj ="+obj.dateOut+"  WHERE ob_id = 3";
+	    if (polacz()) {
+		this.st = this.conn.createStatement();
+		ResultSet rs = st.executeQuery(getObId);
+		this.st = this.conn.createStatement();
+
+	    }
+	} catch (SQLException ex) {
+	    ex.printStackTrace();
+	} finally {
+	}
+
+    }
+
+    public Date getServerTime() {
+
+	Date czasWejscia = new Date();
+	String getDateQuery = "SELECT GETDATE();";
+	if (polacz()) {
+	    try {
+		this.st = this.conn.createStatement();
+		this.rs = this.st.executeQuery(getDateQuery);
+		this.rs.next();
+		Timestamp formatterDaty = rs.getTimestamp("");
+		System.out.println(formatterDaty + " timestamp");
+		if (formatterDaty != null) {
+
+		    czasWejscia = formatterDaty;
+
+		}
+
+	    } catch (SQLException ex) {
+		// Logger.getLogger(DAO.class.getName()).log(Level.SEVERE, null, ex);
+		ex.printStackTrace();
+	    } finally {
+		rozlacz();
+	    }
+
+	}
+	return czasWejscia;
     }
 
 }
