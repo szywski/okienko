@@ -88,6 +88,7 @@ public class DAO {
 	} catch (SQLException ex) {
 	    Logger.getLogger(DAO.class.getName()).log(Level.SEVERE, null, ex);
 	    ex.printStackTrace();
+	    return false;
 	} finally {
 	    rozlacz();
 	}
@@ -95,16 +96,24 @@ public class DAO {
 	return true;
     }
 
-    public void updateWyjscie(ObecnoscData obj) {
+    public void rejestracjaWyjscia(ObecnoscData obj) {
 	obj.setDateOut(getServerTime());
 	try {
-	    String getObId = "SELECT TOP 1 * FROM E_OBECNOSCI WHERE ob_spr_id = " + obj.getIdPracownika()
-		    + " ORDER BY ob_id DESC";
-	    String updateWyjscie = "UPDATE E_OBECNOSCI SET ob_data_wyj ="+obj.dateOut+"  WHERE ob_id = 3";
+	    
+	    
 	    if (polacz()) {
+		//wybieram najnowsze id(PK) logowania dla id pracownikad
+		String getObId = "SELECT TOP 1 ob_id FROM E_OBECNOSCI WHERE ob_spr_id = " + obj.getIdPracownika()
+			+ " ORDER BY ob_id DESC";
 		this.st = this.conn.createStatement();
 		ResultSet rs = st.executeQuery(getObId);
+		rs.next();
+		int id = rs.getInt("ob_id");
+		
+		//aktualizacja rekordu dla id logowania
+		String updateWyjscie = "UPDATE E_OBECNOSCI SET ob_data_wyj ='" + obj.dateOut + "'  WHERE ob_id = "+id+"";
 		this.st = this.conn.createStatement();
+		st.execute(updateWyjscie);
 
 	    }
 	} catch (SQLException ex) {
