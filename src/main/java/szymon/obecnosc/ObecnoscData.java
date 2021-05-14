@@ -30,6 +30,9 @@ public class ObecnoscData {
     public void setDateIn(Date dateIn) {
 	this.dateIn = dateIn;
     }
+    public int getIdPracownika(){
+	return this.idPracownika;
+    }
     
  
     

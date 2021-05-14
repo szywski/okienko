@@ -24,9 +24,6 @@ public class OknoObecnosc extends JFrame implements ActionListener {
     private final JFormattedTextField dataField = new JFormattedTextField();
     private final JFormattedTextField godzinaField = new JFormattedTextField();
     FlowLayout flowLayout;
-    
-    
-    
 
     // oknoObecnosc - wlasciwosci
 
@@ -38,72 +35,78 @@ public class OknoObecnosc extends JFrame implements ActionListener {
     }
 
     private void ustawieniaOkna() {
-	//okno ogólnie
+	// okno ogólnie
 	oknoObecnosc.setSize(350, 150);
 	oknoObecnosc.setTitle("Lista Obecności");
 	oknoObecnosc.setLocationRelativeTo(null);
-	//guzik pObecność
-	//pObecnoscBtn.setSize(500, 30);	
-	pObecnoscBtn.setText("Potwierdź obecność");	
-	
+	// guzik pObecność
+	// pObecnoscBtn.setSize(500, 30);
+	pObecnoscBtn.setText("Potwierdź obecność");
+
 	pObecnoscBtn.addActionListener(this);
 	pObecnoscBtn.setAlignmentX(FlowLayout.CENTER);
-	//guzik pWyjście
-	//pWyjscieBtn.setSize(500, 30);
+	// guzik pWyjście
+	// pWyjscieBtn.setSize(500, 30);
 	pWyjscieBtn.setText("Potwierdź Wyjście");
 	pWyjscieBtn.setEnabled(false);
 	pWyjscieBtn.addActionListener(this);
-	
 
 	pWyjscieBtn.setAlignmentY(FlowLayout.CENTER);
-	
-	//okno
+
+	// okno
 	oknoObecnosc.add(pObecnoscBtn);
 	oknoObecnosc.add(pWyjscieBtn);
 	oknoObecnosc.setLayout(flowLayout);
 	oknoObecnosc.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	oknoObecnosc.setVisible(true);
     }
-	@Override
+
+    @Override
 	public void actionPerformed(ActionEvent e){
 	    Object source = e.getSource();
-	    
-	    if(source == pObecnoscBtn){
-		
-		//oknoObecnosc.add(godzinaField);
-		oknoObecnosc.add(napis);
-		oknoObecnosc.add(dataField);
-		napis.setText("Obecnośćć potwierdzono: ");
-		
-		
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"); //te onformacje powinny być pobierane z serwera?
+	    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"); //te onformacje powinny być pobierane z serwera?
 		LocalDateTime now = LocalDateTime.now();
-		
-		//System.out.println(dtf.format(now));
-		dataField.setText(dtf.format(now));
 		
 		try{
 		    //tworzę sobie obiekt typu  DAO i wrzucam dane
 		        DAO a = new DAO();
-			a.rejestracjaWejscia(new ObecnoscData());
-		    
+			ObecnoscData pracownik = new ObecnoscData();
+			pracownik.setIdPracownika(3);
+			if(source == pObecnoscBtn){
+		
+		//oknoObecnosc.add(godzinaField);
+				oknoObecnosc.add(napis);
+				oknoObecnosc.add(dataField);
+				napis.setText("Obecnośćć potwierdzono: ");
+				a.rejestracjaWejscia(pracownik); 
+				dataField.setText(dtf.format(now));
+				pObecnoscBtn.setEnabled(true);
+				pWyjscieBtn.setEnabled(true);  
+			}
+			if(source==pWyjscieBtn){
+				napis.setText("Wyjście potwierdzono: ");
+				dataField.setText(dtf.format(now));
+				a.rejestracjaWyjscia(pracownik);
+		}
+			
+			
+			
+			
+			
 		}catch(Exception ex){
 		   
 		    ex.printStackTrace();
 		}
+	    
 		
 		
 		
-		pObecnoscBtn.setEnabled(false);
-		pWyjscieBtn.setEnabled(true);
+		
+		//System.out.println(dtf.format(now));
+		
 	    
 	    }
-	    if(source == pWyjscieBtn){
-		oknoObecnosc.dispose();
-	    }
-	    
-	
-	}
-    
 
 }
+
+
